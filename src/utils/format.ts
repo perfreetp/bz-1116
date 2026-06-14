@@ -92,3 +92,23 @@ export const generateOrderId = (): string => {
     .padStart(4, '0');
   return `ORD${timestamp}${random}`;
 };
+
+export const isOpenNow = (businessHours: string): boolean => {
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  
+  const [openStr, closeStr] = businessHours.split('-');
+  if (!openStr || !closeStr) return true;
+  
+  const [openHour, openMin] = openStr.split(':').map(Number);
+  const [closeHour, closeMin] = closeStr.split(':').map(Number);
+  
+  const openMinutes = openHour * 60 + openMin;
+  const closeMinutes = closeHour * 60 + closeMin;
+  
+  if (closeMinutes > openMinutes) {
+    return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
+  } else {
+    return currentMinutes >= openMinutes || currentMinutes < closeMinutes;
+  }
+};

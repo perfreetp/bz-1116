@@ -35,7 +35,7 @@ export const StoreWorkbench = () => {
   const [searchCode, setSearchCode] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
-  const storeOrders = orders.filter((o) => o.storeId === currentUser?.storeId || true);
+  const storeOrders = orders.filter((o) => o.storeId === currentUser?.storeId);
 
   const todayOrders = storeOrders.filter((o) => {
     const today = new Date().toISOString().slice(0, 10);
@@ -51,10 +51,14 @@ export const StoreWorkbench = () => {
   const todayRevenue = todayOrders.reduce((sum, o) => sum + o.totalPrice, 0);
 
   const filteredOrders = storeOrders.filter((o) => {
+    let matchStatus = true;
     if (activeTab === 'stored') {
-      return o.status === 'stored' || o.status === 'extended';
+      matchStatus = o.status === 'stored' || o.status === 'extended';
+    } else {
+      matchStatus = o.status === activeTab;
     }
-    return o.status === activeTab;
+    const matchCode = searchCode.trim() === '' || o.pickupCode.toLowerCase().includes(searchCode.toLowerCase().trim());
+    return matchStatus && matchCode;
   });
 
   const handleMarkStored = (orderId: string) => {

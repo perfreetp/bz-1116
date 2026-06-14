@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   MapPin,
   Clock,
@@ -37,11 +37,14 @@ const insuranceOptions = [
 export const OrderCreate = () => {
   const { storeId } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { stores } = useStoreStore();
-  const { addOrder } = useOrderStore();
+  const { addOrder, getOrderById } = useOrderStore();
   const { currentUser } = useUserStore();
 
   const store = stores.find((s) => s.id === storeId);
+  const successOrderId = searchParams.get('success');
+  const successOrder = successOrderId ? getOrderById(successOrderId) : null;
 
   const now = new Date();
   const formatDateTimeLocal = (d: Date) =>
@@ -58,7 +61,7 @@ export const OrderCreate = () => {
   const [customerName, setCustomerName] = useState(currentUser?.name || '');
   const [customerPhone, setCustomerPhone] = useState('');
   const [description, setDescription] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const showSuccess = !!successOrder;
   const [newOrderId, setNewOrderId] = useState('');
 
   const basePrice = useMemo(() => {
@@ -144,7 +147,7 @@ export const OrderCreate = () => {
 
     addOrder(newOrder);
     setNewOrderId(orderId);
-    setShowSuccess(true);
+    setSearchParams({ success: orderId });
   };
 
   if (!store) {
@@ -155,7 +158,7 @@ export const OrderCreate = () => {
     );
   }
 
-  if (showSuccess) {
+  if (showSuccess && successOrder) {
     return (
       <div className="max-w-md mx-auto animate-fade-in">
         <div className="bg-white rounded-3xl p-8 shadow-soft text-center">
@@ -168,7 +171,7 @@ export const OrderCreate = () => {
           <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-6 mb-6">
             <p className="text-sm text-primary-600 mb-2">取件码</p>
             <p className="text-4xl font-bold text-primary-600 tracking-widest font-mono">
-              ABC123
+              {successOrder.pickupCode}
             </p>
             <div className="mt-4 flex justify-center">
               <div className="w-32 h-32 bg-white rounded-lg flex items-center justify-center">
@@ -180,16 +183,16 @@ export const OrderCreate = () => {
           <div className="text-left space-y-3 mb-6 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-500">寄存点</span>
-              <span className="text-gray-800 font-medium">{store.name}</span>
+              <span className="text-gray-800 font-medium">{successOrder.storeName}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">地址</span>
-              <span className="text-gray-800">{store.address}</span>
+              <span className="text-gray-800">{successOrder.storeAddress}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">支付金额</span>
               <span className="text-primary-600 font-bold">
-                {formatPrice(totalPrice)}
+                {formatPrice(successOrder.totalPrice)}
               </span>
             </div>
           </div>

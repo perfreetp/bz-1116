@@ -9,6 +9,8 @@ const tabs: { value: string; label: string }[] = [
   { value: 'all', label: '全部订单' },
   { value: 'pending', label: '待入库' },
   { value: 'stored', label: '寄存中' },
+  { value: 'extended', label: '已续存' },
+  { value: 'overdue', label: '已超时' },
   { value: 'completed', label: '已完成' },
   { value: 'cancelled', label: '已取消' },
 ];
@@ -93,7 +95,7 @@ export const OrderCenter = () => {
                 </div>
               </div>
 
-              {order.status === 'stored' && (
+              {(order.status === 'stored' || order.status === 'extended') && (
                 <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm">
                     <QrCode className="w-4 h-4 text-primary-500" />
@@ -224,6 +226,7 @@ export const OrderCenter = () => {
               </div>
 
               {currentOrder.status === 'stored' ||
+              currentOrder.status === 'extended' ||
               currentOrder.status === 'pending' ? (
                 <div className="bg-primary-50 rounded-xl p-4 text-center">
                   <p className="text-sm text-primary-600 mb-2">取件码</p>

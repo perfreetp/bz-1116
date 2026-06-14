@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal, X, ArrowUpDown, MapPin } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ArrowUpDown, MapPin, Clock } from 'lucide-react';
 import { useStoreStore } from '@/store/useStoreStore';
 import { StoreCard } from '@/components/StoreCard/StoreCard';
 import { useMemo, useState } from 'react';
@@ -75,6 +75,25 @@ export const StoreList = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
+                营业时间
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setFilters({ openNow: !filters.openNow })}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    filters.openNow
+                      ? 'bg-secondary-500 text-white shadow-orange-glow'
+                      : 'bg-warm-50 text-gray-600 hover:bg-warm-100'
+                  }`}
+                >
+                  <Clock className="w-4 h-4" />
+                  仅看正在营业
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 行李尺寸
               </label>
               <div className="flex flex-wrap gap-2">
@@ -115,7 +134,7 @@ export const StoreList = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-2">
+            <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
                 价格区间：¥{filters.priceRange[0]} - ¥{filters.priceRange[1]}/小时
               </label>
@@ -146,6 +165,7 @@ export const StoreList = () => {
                   sizeFilter: 'all',
                   priceRange: [0, 100],
                   minRating: 0,
+                  openNow: false,
                   sortBy: 'default',
                 })
               }

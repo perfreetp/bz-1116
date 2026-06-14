@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Store } from '@/types';
 import { mockStores } from '@/data/stores';
+import { isOpenNow } from '@/utils/format';
 
 interface FilterOptions {
   searchKeyword: string;
@@ -64,6 +65,10 @@ export const useStoreStore = create<StoreState>((set, get) => ({
 
     if (filters.minRating > 0) {
       filtered = filtered.filter((s) => s.rating >= filters.minRating);
+    }
+
+    if (filters.openNow) {
+      filtered = filtered.filter((s) => isOpenNow(s.businessHours));
     }
 
     filtered = filtered.filter(
